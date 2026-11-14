@@ -114,7 +114,10 @@ private fun localAnswer(ctx: android.content.Context, q: String, prefs: android.
     }
     if (s.contains("notlarım") || s.contains("notlarimi")) {
         val notes = prefs.all.filterKeys { it.startsWith("n_") }.values.filterIsInstance<String>()
-        return if (notes.isEmpty()) "Henüz kayıtlı notun yok." else notes.joinToString("\n", "Notların:\n• ", "\n", "• ")
+        return if (notes.isEmpty()) "Henüz kayıtlı notun yok." else notes.joinToString(separator = "
+", prefix = "Notların:
+• ", postfix = "
+")
     }
     if (s.contains("saat kaç")) return "Saat: " + SimpleDateFormat("HH:mm", Locale("tr", "TR")).format(Date())
     val apps = listOf("youtube" to "com.google.android.youtube", "whatsapp" to "com.whatsapp", "chrome" to "com.android.chrome", "ayarlar" to "com.android.settings")
