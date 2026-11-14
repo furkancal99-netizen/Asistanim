@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "91563664529",
+    "project_id": "asistanim-a4829",
+    "storage_bucket": "asistanim-a4829.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:91563664529:android:36eacbbbc0e04edb554b30",
+        "android_client_info": {
+          "package_name": "com.asistanim.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADeZGgdE7cColhP_Ty_RTWV4zfreUP8Wc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

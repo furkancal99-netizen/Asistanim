@@ -31,6 +31,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.launch
+
+import com.google.firebase.Firebase
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.ai.ai
+import com.google.firebase.FirebaseApp
+import com.google.firebase.ai.type.GenerativeBackend
+import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
+
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -41,6 +49,10 @@ class MainActivity : ComponentActivity(), TextToSpeech.OnInitListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         tts = TextToSpeech(this, this)
+        FirebaseApp.initializeApp(this)
+        FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
+            DebugAppCheckProviderFactory.getInstance()
+        )
         setContent { AssistantApp { say(it) } }
     }
     override fun onInit(status: Int) { if (status == TextToSpeech.SUCCESS) tts?.language = Locale("tr", "TR") }
@@ -68,7 +80,7 @@ fun AssistantApp(speak: (String) -> Unit) {
                 IconButton(enabled = input.isNotBlank() && !busy, onClick = {
                     val q = input.trim(); input = ""; items = items + Message(System.nanoTime(), q, true); busy = true
                     scope.launch {
-                        val a = localAnswer(ctx, q, prefs)
+                        val a = onlineAnswer(ctx, q, prefs)
                         items = items + Message(System.nanoTime(), a, false); busy = false; speak(a)
                     }
                 }) { Icon(Icons.Default.Send, "Gönder") }
@@ -125,4 +137,28 @@ private fun localAnswer(ctx: android.content.Context, q: String, prefs: android.
         return "${target.first} uygulaması bulunamadı."
     }
     return "Bu özellik şu anda çevrimdışı temel modda. “Not al: …”, “Notlarımı göster”, “Saat kaç?” veya “YouTube aç” gibi komutları deneyebilirsin. Bulut yapay zekâ bağlantısını sonraki aşamada güvenli bir sunucu üzerinden ekleyeceğiz."
+}
+
+
+private suspend fun onlineAnswer(
+    ctx: android.content.Context,
+    q: String,
+    prefs: android.content.SharedPreferences
+): String {
+    val local = localAnswer(ctx, q, prefs)
+
+    if (!local.startsWith("Bu özellik şu anda çevrimdışı")) {
+        return local
+    }
+
+    return try {
+        val model = Firebase.ai(
+            backend = GenerativeBackend.googleAI()
+        ).generativeModel("gemini-3.8-flash")
+
+        val response = model.generateContent(q)
+        response.text ?: "Yapay zekâ boş yanıt verdi."
+    } catch (e: Exception) {
+        "Gemini bağlantı hatası: ${e.message ?: "Bilinmeyen hata"}"
+    }
 }
