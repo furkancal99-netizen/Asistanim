@@ -62,17 +62,18 @@ class MainActivity : ComponentActivity(), TextToSpeech.OnInitListener {
     )
 FirebaseAppCheck.getInstance().getAppCheckToken(false)
     .addOnSuccessListener {
-        Log.d("APP_CHECK_TEST", "TOKEN ALINDI")
+        android.widget.Toast.makeText(
+            this, "App Check token alındı",
+            android.widget.Toast.LENGTH_LONG
+        ).show()
     }
-    .addOnFailureListener {
-        Log.e("APP_CHECK_TEST", "TOKEN HATASI", it)
+    .addOnFailureListener { error ->
+        android.widget.Toast.makeText(
+            this,
+            "App Check: ${error.javaClass.simpleName}: ${error.message}",
+            android.widget.Toast.LENGTH_LONG
+        ).show()
     }
-    tts = TextToSpeech(this, this)
-
-    setContent {
-        AssistantApp { say(it) }
-    }
-}
     override fun onInit(status: Int) { if (status == TextToSpeech.SUCCESS) tts?.language = Locale("tr", "TR") }
     private fun say(s: String) { tts?.speak(s, TextToSpeech.QUEUE_FLUSH, null, "asistanim") }
     override fun onDestroy() { tts?.shutdown(); super.onDestroy() }
