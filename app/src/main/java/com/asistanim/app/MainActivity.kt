@@ -247,6 +247,7 @@ private suspend fun onlineAnswer(
         response.text ?: "Yapay zekâ boş yanıt verdi."
 
     } catch (geminiError: Exception) {
+Log.e("ASISTAN_TEST", "Gemini hatası", geminiError)
         try {
             "Gemini kullanılamıyor. Groq yanıtı:\n${groqAnswer(q)}"
         } catch (groqError: Exception) {
