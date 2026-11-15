@@ -1,4 +1,3 @@
-package com.asistanim.app
 
 import android.Manifest
 import android.content.Intent
@@ -30,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import android.util.Log
 import kotlinx.coroutines.launch
 
 import com.google.firebase.Firebase
@@ -80,7 +80,9 @@ fun AssistantApp(speak: (String) -> Unit) {
                 IconButton(enabled = input.isNotBlank() && !busy, onClick = {
                     val q = input.trim(); input = ""; items = items + Message(System.nanoTime(), q, true); busy = true
                     scope.launch {
-                        val a = onlineAnswer(ctx, q, prefs)
+                        Log.d("ASISTAN_TEST", "Gemini isteği başladı: $q")
+val a = onlineAnswer(ctx, q, prefs)
+Log.d("ASISTAN_TEST", "Gemini cevabı geldi: $a")
                         items = items + Message(System.nanoTime(), a, false); busy = false; speak(a)
                     }
                 }) { Icon(Icons.Default.Send, "Gönder") }
@@ -88,7 +90,7 @@ fun AssistantApp(speak: (String) -> Unit) {
         }) { pad ->
             LazyColumn(Modifier.fillMaxSize().padding(pad), contentPadding = PaddingValues(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 items(items, key = { it.id }) { m ->
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = if (m.user) Arrangement.End else Arrangement.Start) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = f (m.user) Arrangement.End else Arrangement.Start) {
                         Surface(color = if (m.user) Color(0xFF24456A) else Color(0xFF192941), shape = RoundedCornerShape(16.dp)) {
                             Text(m.text, Modifier.widthIn(max = 310.dp).padding(13.dp), color = Color.White, lineHeight = 21.sp)
                         }
