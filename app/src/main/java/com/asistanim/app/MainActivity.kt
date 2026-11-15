@@ -84,7 +84,11 @@ FirebaseAppCheck.getInstance().getAppCheckToken(false)
 
     Log.e("APP_CHECK_TEST", mesaj)
 }
+tts = TextToSpeech(this, this)
 
+setContent {
+    AssistantApp(speak = ::say)
+}
     }
 override fun onInit(status: Int) {
     if (status == TextToSpeech.SUCCESS) {
@@ -251,3 +255,4 @@ private suspend fun onlineAnswer(
     }
 }
 }
+
