@@ -68,12 +68,13 @@ FirebaseAppCheck.getInstance().getAppCheckToken(false)
         ).show()
     }
     .addOnFailureListener { error ->
-        android.widget.Toast.makeText(
-            this,
-            "App Check: ${error.javaClass.simpleName}: ${error.message}",
-            android.widget.Toast.LENGTH_LONG
-        ).show()
-    }
+    val mesaj = android.util.Log.getStackTraceString(error)
+    android.widget.Toast.makeText(
+        this,
+        "App Check hatası: ${error.message}",
+        android.widget.Toast.LENGTH_LONG
+    ).show()
+    Log.e("APP_CHECK_TEST", mesaj)
 }
 
 override fun onInit(status: Int) {
