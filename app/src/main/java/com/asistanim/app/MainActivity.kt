@@ -90,7 +90,7 @@ Log.d("ASISTAN_TEST", "Gemini cevabı geldi: $a")
         }) { pad ->
             LazyColumn(Modifier.fillMaxSize().padding(pad), contentPadding = PaddingValues(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 items(items, key = { it.id }) { m ->
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = f (m.user) Arrangement.End else Arrangement.Start) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = if (m.user) Arrangement.End else Arrangement.Start) {
                         Surface(color = if (m.user) Color(0xFF24456A) else Color(0xFF192941), shape = RoundedCornerShape(16.dp)) {
                             Text(m.text, Modifier.widthIn(max = 310.dp).padding(13.dp), color = Color.White, lineHeight = 21.sp)
                         }
