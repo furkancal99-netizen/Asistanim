@@ -77,6 +77,7 @@ FirebaseAppCheck.getInstance().getAppCheckToken(false)
     Log.e("APP_CHECK_TEST", mesaj)
 }
 
+    }
 override fun onInit(status: Int) {
     if (status == TextToSpeech.SUCCESS) {
         tts?.language = Locale("tr", "TR")
