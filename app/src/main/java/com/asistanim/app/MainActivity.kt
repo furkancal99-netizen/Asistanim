@@ -165,6 +165,10 @@ private suspend fun groqAnswer(q: String): String =
             connection.readTimeout = 30000
             connection.doOutput = true
             connection.setRequestProperty("Content-Type", "application/json")
+val appCheckToken = com.google.android.gms.tasks.Tasks.await(
+    FirebaseAppCheck.getInstance().getAppCheckToken(false)
+).token
+connection.setRequestProperty("X-Firebase-AppCheck", appCheckToken)
 
             val body = JSONObject().put("message", q).toString()
             connection.outputStream.use {
