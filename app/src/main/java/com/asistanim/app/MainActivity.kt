@@ -48,14 +48,20 @@ data class Message(val id: Long, val text: String, val user: Boolean)
 class MainActivity : ComponentActivity(), TextToSpeech.OnInitListener {
     private var tts: TextToSpeech? = null
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        tts = TextToSpeech(this, this)
-        FirebaseApp.initializeApp(this)
-        FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
-            DebugAppCheckProviderFactory.getInstance()
-        )
-        setContent { AssistantApp { say(it) } }
+    super.onCreate(savedInstanceState)
+
+    FirebaseApp.initializeApp(this)
+
+    FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
+        DebugAppCheckProviderFactory.getInstance()
+    )
+
+    tts = TextToSpeech(this, this)
+
+    setContent {
+        AssistantApp { say(it) }
     }
+}
     override fun onInit(status: Int) { if (status == TextToSpeech.SUCCESS) tts?.language = Locale("tr", "TR") }
     private fun say(s: String) { tts?.speak(s, TextToSpeech.QUEUE_FLUSH, null, "asistanim") }
     override fun onDestroy() { tts?.shutdown(); super.onDestroy() }
