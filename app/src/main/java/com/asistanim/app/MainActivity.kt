@@ -74,11 +74,22 @@ FirebaseAppCheck.getInstance().getAppCheckToken(false)
             android.widget.Toast.LENGTH_LONG
         ).show()
     }
-    override fun onInit(status: Int) { if (status == TextToSpeech.SUCCESS) tts?.language = Locale("tr", "TR") }
-    private fun say(s: String) { tts?.speak(s, TextToSpeech.QUEUE_FLUSH, null, "asistanim") }
-    override fun onDestroy() { tts?.shutdown(); super.onDestroy() }
 }
 
+override fun onInit(status: Int) {
+    if (status == TextToSpeech.SUCCESS) {
+        tts?.language = Locale("tr", "TR")
+    }
+}
+
+private fun say(s: String) {
+    tts?.speak(s, TextToSpeech.QUEUE_FLUSH, null, null)
+}
+
+override fun onDestroy() {
+    tts?.shutdown()
+    super.onDestroy()
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AssistantApp(speak: (String) -> Unit) {
