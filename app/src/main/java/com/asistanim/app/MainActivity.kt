@@ -32,6 +32,11 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import android.util.Log
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.net.HttpURLConnection
+import java.net.URL
+import org.json.JSONObject
 
 import com.google.firebase.Firebase
 import com.google.firebase.appcheck.FirebaseAppCheck
@@ -149,6 +154,43 @@ private fun localAnswer(ctx: android.content.Context, q: String, prefs: android.
 }
 
 
+private suspend fun groqAnswer(q: String): String =
+    withContext(Dispatchers.IO) {
+        val connection = URL("https://asistanim-groq.furkancal99.workers.dev")
+            .openConnection() as HttpURLConnection
+
+        try {
+            connection.requestMethod = "POST"
+            connection.connectTimeout = 15000
+            connection.readTimeout = 30000
+            connection.doOutput = true
+            connection.setRequestProperty("Content-Type", "application/json")
+
+            val body = JSONObject().put("message", q).toString()
+            connection.outputStream.use {
+                it.write(body.toByteArray(Charsets.UTF_8))
+            }
+
+            val code = connection.responseCode
+            val stream = if (code in 200..299) {
+                connection.inputStream
+            } else {
+                connection.errorStream
+            }
+
+            val result = stream.bufferedReader().use { it.readText() }
+            val json = JSONObject(result)
+
+            if (code !in 200..299) {
+                throw Exception(json.optString("error", "Groq bağlantı hatası"))
+            }
+
+            json.optString("answer", "Groq boş yanıt verdi.")
+        } finally {
+            connection.disconnect()
+        }
+    }
+
 private suspend fun onlineAnswer(
     ctx: android.content.Context,
     q: String,
@@ -167,7 +209,12 @@ private suspend fun onlineAnswer(
 
         val response = model.generateContent(q)
         response.text ?: "Yapay zekâ boş yanıt verdi."
-    } catch (e: Exception) {
-        "Gemini bağlantı hatası: ${e.message ?: "Bilinmeyen hata"}"
+
+    } catch (geminiError: Exception) {
+        try {
+            "Gemini kullanılamıyor. Groq yanıtı:\n${groqAnswer(q)}"
+        } catch (groqError: Exception) {
+            "Gemini hatası: ${geminiError.message}\nGroq hatası: ${groqError.message}"
+        }
     }
 }
