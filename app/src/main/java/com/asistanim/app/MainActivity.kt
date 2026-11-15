@@ -60,7 +60,13 @@ class MainActivity : ComponentActivity(), TextToSpeech.OnInitListener {
     FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
         DebugAppCheckProviderFactory.getInstance()
     )
-
+FirebaseAppCheck.getInstance().getAppCheckToken(false)
+    .addOnSuccessListener {
+        Log.d("APP_CHECK_TEST", "TOKEN ALINDI")
+    }
+    .addOnFailureListener {
+        Log.e("APP_CHECK_TEST", "TOKEN HATASI", it)
+    }
     tts = TextToSpeech(this, this)
 
     setContent {
