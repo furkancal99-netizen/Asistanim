@@ -69,11 +69,19 @@ FirebaseAppCheck.getInstance().getAppCheckToken(false)
     }
     .addOnFailureListener { error ->
     val mesaj = android.util.Log.getStackTraceString(error)
-    android.widget.Toast.makeText(
-        this,
-        "App Check hatası: ${error.message}",
-        android.widget.Toast.LENGTH_LONG
-    ).show()
+
+    android.app.AlertDialog.Builder(this)
+        .setTitle("App Check Hatası")
+        .setMessage(mesaj)
+        .setPositiveButton("Kapat", null)
+        .setNeutralButton("Kopyala") { _, _ ->
+            val clipboard = getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            clipboard.setPrimaryClip(
+                android.content.ClipData.newPlainText("App Check", mesaj)
+            )
+        }
+        .show()
+
     Log.e("APP_CHECK_TEST", mesaj)
 }
 
